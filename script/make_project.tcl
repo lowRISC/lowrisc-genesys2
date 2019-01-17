@@ -1,5 +1,5 @@
 # Xilinx Vivado script
-# Version: Vivado 2015.4
+# Version: Vivado 2018.2
 # Function:
 #   Generate a vivado project for the lowRISC SoC
 
@@ -18,7 +18,7 @@ set CONFIG [lindex $argv 1]
 set orig_proj_dir [file normalize $origin_dir/$project_name]
 
 # Create project
-create_project $project_name $origin_dir/$project_name
+create_project $project_name $origin_dir/$project_name -part xc7k325tffg900-2
 
 # Set the directory path for the new project
 set proj_dir [get_property directory [current_project]]
@@ -26,7 +26,7 @@ set proj_dir [get_property directory [current_project]]
 # Set project properties
 set obj [get_projects $project_name]
 set_property "default_lib" "xil_defaultlib" $obj
-set_property "board_part" "xilinx.com:kc705:part0:1.1" $obj
+set_property "board_part" "digilentinc.com:genesys2:part0:1.1" $obj
 set_property "simulator_language" "Mixed" $obj
 
 # Create 'sources_1' fileset (if not found)
@@ -37,9 +37,10 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set files [list \
                [file normalize $base_dir/rocket-chip/vsim/generated-src/freechips.rocketchip.system.$CONFIG.v] \
+               [file normalize $base_dir/rocket-chip/vsim/generated-src/freechips.rocketchip.system.$CONFIG.behav_srams.v] \
                [file normalize $base_dir/src/main/verilog/chip_top.sv] \
                [file normalize $base_dir/src/main/verilog/periph_soc.sv] \
-               [file normalize $base_dir/src/main/verilog/framing_top_mii.sv] \
+               [file normalize $base_dir/src/main/verilog/framing_top.sv] \
                [file normalize $base_dir/src/main/verilog/axis_gmii_rx.v] \
                [file normalize $base_dir/src/main/verilog/axis_gmii_tx.v] \
                [file normalize $base_dir/src/main/verilog/lfsr.v] \
@@ -67,7 +68,6 @@ set files [list \
                [file normalize $base_dir/src/main/verilog/dualmem_widen.v] \
                [file normalize $base_dir/src/main/verilog/dualmem_widen8.v] \
                [file normalize $base_dir/src/main/verilog/eth_lfsr.v] \
-               [file normalize $base_dir/src/main/verilog/fpga_srams_generate.sv] \
                [file normalize $base_dir/src/main/verilog/my_fifo.v] \
                [file normalize $base_dir/src/main/verilog/rachelset.v] \
                [file normalize $base_dir/src/main/verilog/stubs.sv] \
@@ -81,7 +81,7 @@ set_property include_dirs [list \
                                [file normalize $origin_dir/generated-src] \
                               ] [get_filesets sources_1]
 
-set_property verilog_define [list FPGA FPGA_FULL KC705] [get_filesets sources_1]
+set_property verilog_define [list FPGA FPGA_FULL GENESYS2] [get_filesets sources_1]
 
 # Set 'sources_1' fileset properties
 set_property "top" "chip_top" [get_filesets sources_1]
@@ -107,7 +107,7 @@ generate_target {instantiation_template} \
     [get_files $proj_dir/$project_name.srcs/sources_1/ip/mig_7series_0/mig_7series_0.xci]
 
 # AXI clock converter due to the clock difference
-create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_0
+create_ip -name axi_clock_converter -vendor xilinx.com -library ip -module_name axi_clock_converter_0
 set_property -dict [list \
                         CONFIG.ADDR_WIDTH {30} \
                         CONFIG.DATA_WIDTH $mem_data_width \
