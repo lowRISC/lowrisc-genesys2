@@ -88,8 +88,6 @@ lowrisc_headers = \
 verilog_srcs = \
 	$(top_dir)/src/main/verilog/chip_top.sv \
 	$(top_dir)/src/main/verilog/spi_wrapper.sv \
-	$(top_dir)/vsrc/AsyncResetReg.v \
-	$(top_dir)/vsrc/plusarg_reader.v \
 
 verilog_headers = \
 	$(top_dir)/src/main/verilog/config.vh \
@@ -116,7 +114,7 @@ test_cxx_headers = \
 #--------------------------------------------------------------------
 
 verilog: $(lowrisc_headers)
-	make -C ../../../rocket-chip/vsim verilog
+	make -C ../../../rocket-chip/vsim verilog CONFIG=LowRiscConfig
 
 $(fpga_srams): $(generated_dir)/$(PROJECT).$(CONFIG).conf $(mem_gen)
 	$(mem_gen) $< > $@.tmp
@@ -255,10 +253,10 @@ $(EXAMPLES):  $(lowrisc_headers) | examples/Makefile
 .PHONY: $(EXAMPLES)
 
 tests:  $(lowrisc_headers) | examples/Makefile
-	FPGA_DIR=$(proj_dir) BASE_DIR=$(example_dir) $(MAKE) -C examples eth.hex
-	riscv64-unknown-elf-size examples/eth.riscv
-	riscv64-unknown-elf-objdump -d examples/eth.riscv > examples/eth.dis
-	cp examples/eth.hex $(boot_mem)
+	FPGA_DIR=$(proj_dir) BASE_DIR=$(example_dir) $(MAKE) -C examples hello.hex
+	riscv64-unknown-elf-size examples/hello.riscv
+	riscv64-unknown-elf-objdump -d examples/hello.riscv > examples/hello.dis
+	cp examples/hello.hex $(boot_mem)
 
 empty:
 	mkdir -p examples

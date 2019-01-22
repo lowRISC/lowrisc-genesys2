@@ -22,7 +22,7 @@ set_property -dict {LOC AG12 IOSTANDARD LVCMOS15 SLEW SLOW DRIVE 12} [get_ports 
 set_property -dict {LOC AF12 IOSTANDARD LVCMOS15 SLEW SLOW DRIVE 12} [get_ports phy_mdc]
 create_clock -period 8.000 -name phy_rx_clk [get_ports phy_rx_clk]
 set_clock_groups -asynchronous -group [get_clocks phy_rx_clk -include_generated_clocks]
-set_property IDELAY_VALUE 0 [get_cells {phy_rx_ctl_idelay phy_rxd_idelay_*}]
+#set_property IDELAY_VALUE 0 [get_cells {phy_rx_ctl_idelay phy_rxd_idelay_*}]
 
 # on board differential clock, 200MHz
 set_property PACKAGE_PIN AD12 [get_ports clk_p]
@@ -96,3 +96,13 @@ set_property -dict { PACKAGE_PIN AG23  IOSTANDARD LVCMOS33 } [get_ports { VGA_VS
 ## USB HIDs For Both Mouse and Keyboard
 set_property -dict { PACKAGE_PIN AD23  IOSTANDARD LVCMOS33  PULLUP true } [get_ports { PS2_CLK }]; #IO_L12P_T1_MRCC_12 Sch=ps2_clk[0]
 set_property -dict { PACKAGE_PIN AE20  IOSTANDARD LVCMOS33  PULLUP true } [get_ports { PS2_DATA }]; #IO_25_12 Sch=ps2_data[0]
+
+## PMOD Header JC
+set_property -dict {PACKAGE_PIN AC26 IOSTANDARD LVCMOS33} [get_ports tck]
+set_property -dict {PACKAGE_PIN AJ27 IOSTANDARD LVCMOS33} [get_ports tdi]
+set_property -dict {PACKAGE_PIN AH30 IOSTANDARD LVCMOS33} [get_ports tdo]
+set_property -dict {PACKAGE_PIN AK29 IOSTANDARD LVCMOS33} [get_ports tms]
+set_property -dict {PACKAGE_PIN AD26 IOSTANDARD LVCMOS33} [get_ports trst_n]
+# accept sub-optimal placement
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets tck_IBUF]
+
